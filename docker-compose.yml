@@ -1,0 +1,55 @@
+version: "3"
+services:
+
+  database:
+    image: mariadb:10.4
+    environment:
+      MYSQL_ROOT_PASSWORD: abc
+      MARIADB_DATABASE: fitness_db
+    command: ['mysqld', '--lower-case-table-names=1']
+    ports:
+      - 3306:3306
+    volumes:
+      - database_volume:/var/lib/mysql
+    #      - ./docker/database/keycloak-init.sql:/docker-entrypoint-initdb.d/keycloak-init.sql
+    networks:
+      - database_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.0.2
+    environment:
+      PMA_HOST: database
+    ports:
+      - 8099:80
+    depends_on:
+      - database
+    networks:
+      - database_network
+
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:20.0.0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB_URL_HOST: database
+      KC_DB_URL_DATABASE: testManagement_db
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: abc
+      KC_PROXY: "edge"
+      KC_FEATURES: "account-api,authorization"
+    ports:
+      - 8180:8080
+    volumes:
+      # Location of realm to import
+      - ${PWD}/realm-export.json:/opt/keycloak/data/import/realm-export.json
+    depends_on:
+      - database
+
+
+volumes:
+  database_volume:
+networks:
+  database_network:
+  lc_network:

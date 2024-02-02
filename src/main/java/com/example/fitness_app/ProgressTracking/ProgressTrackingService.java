@@ -1,4 +1,5 @@
 package com.example.fitness_app.ProgressTracking;
 
-public class ProgressTrackingService {
+import com.example.fitness_app.common.CommonResponseDTO;
+public interface ProgressTrackingService {
 }

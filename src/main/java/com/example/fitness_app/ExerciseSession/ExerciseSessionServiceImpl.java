@@ -36,6 +36,8 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
     }
 
 
+
+
     @Override
     @Transactional
     public ExerciseSessionDTO saveExercise(ExerciseSessionDTOSave exerciseDTO) {

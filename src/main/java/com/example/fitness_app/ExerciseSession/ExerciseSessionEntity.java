@@ -3,6 +3,7 @@ package com.example.fitness_app.ExerciseSession;
 import lombok.*;
 import org.apache.james.mime4j.dom.datetime.DateTime;
 import org.springframework.lang.Nullable;
+import java.time.LocalDateTime;
 
 import java.util.Date;
 import java.util.UUID;

@@ -27,7 +27,6 @@ public class TestController {
                 .status(HttpStatus.CREATED)
                 .body(savedTestDTO);
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<TestEntity> findById(@PathVariable String id) {
         TestEntity testDTO = testService.findTestById(id);

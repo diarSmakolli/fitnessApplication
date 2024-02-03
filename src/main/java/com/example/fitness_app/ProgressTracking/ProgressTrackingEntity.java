@@ -1,6 +1,7 @@
 package com.example.fitness_app.ProgressTracking;
 
 import com.example.fitness_app.ExerciseSession.ExerciseSessionEntity;
+import com.example.fitness_app.User.UserEntity;
 import lombok.*;
 import org.apache.james.mime4j.dom.datetime.DateTime;
 import org.springframework.lang.Nullable;
@@ -64,6 +65,10 @@ public class ProgressTrackingEntity {
     @ManyToOne
     @JoinColumn(name = "exercise_session_id")
     private ExerciseSessionEntity exerciseSession;
+
+    @Column(name = "user_id")
+    private String userId;
+
 
 //    public void setExerciseSession(ExerciseSessionEntity exerciseSession) {
 //        this.exerciseSession = exerciseSession;

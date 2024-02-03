@@ -107,7 +107,7 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
             ExerciseSessionEntity savedExercise = exerciseSessionRepository.save(exercise);
             return exerciseSessionMapper.mapToDTO(savedExercise);
         } catch (DataAccessException ex) {
-            logAndThrowInternalServerError("Error saving test", ex);
+            logAndThrowInternalServerError("Error saving Exercise", ex);
             return null;
         } catch (BadRequestException ex) {
             logAndThrowBadRequest("Invalid request: " + ex.getMessage());
@@ -130,8 +130,6 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
 
         logger.info("Exercise updated successfully!" + id);
         return exerciseSessionMapper.mapToDTO(updatedExercise);
-
-
     }
 
     @Override

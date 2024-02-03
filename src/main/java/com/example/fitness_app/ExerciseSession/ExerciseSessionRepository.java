@@ -19,7 +19,6 @@ public interface ExerciseSessionRepository extends JpaRepository<ExerciseSession
     @Query("SELECT e FROM ExerciseSessionEntity e WHERE e.deletedAt IS NULL AND e.user.id = :userId")
     List<ExerciseSessionEntity> findAllByUserIdAndDeletedAtIsNull(@Param("userId") String userId);
 
-    List<ExerciseSessionEntity> findByUserId(String userId);
 
     @Query("SELECT e FROM ExerciseSessionEntity e WHERE e.id = :exerciseId AND e.user.id = :userId AND e.deletedAt IS NULL")
     ExerciseSessionEntity findExerciseByIdAndUserIdAndDeletedAtIsNull(@Param("exerciseId") String exerciseId, @Param("userId") String userId);

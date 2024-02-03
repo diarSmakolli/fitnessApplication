@@ -83,7 +83,6 @@ public class ExerciseSessionController {
     }
 
 
-
     @PostMapping(value = "/save-by-user-id")
     @ApiResponse(responseCode = "201", description = "Test created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid request")

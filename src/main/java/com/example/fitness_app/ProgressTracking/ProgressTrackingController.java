@@ -40,6 +40,25 @@ public class ProgressTrackingController {
         return new ResponseEntity<>(progressDTOs, HttpStatus.OK);
     }
 
+    @PostMapping(value = "/saveByExerciseId")
+    @ApiResponse(responseCode = "201", description = "Test created successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid request")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    @ApiResponse(responseCode = "403", description = "Forbidden")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    public ResponseEntity<ProgressTrackingDTO> saveProgressByExerciseId(
+            @RequestBody ProgressTrackingDTOSave progressDTO,
+            @RequestParam String exerciseSessionId) {
+
+
+        ProgressTrackingDTO savedProgressByExerciseId = progressTrackingService.saveProgressByExerciseId(progressDTO, exerciseSessionId);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(savedProgressByExerciseId);
+
+    }
+
     @GetMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved progress by ID")
     @ApiResponse(responseCode = "404", description = "Progress not found")
@@ -108,6 +127,29 @@ public class ProgressTrackingController {
                 .status(HttpStatus.CREATED)
                 .body(savedProgress);
     }
+
+//    @PostMapping(value = "/saveByUserIdAndExerciseId")
+//    @ApiResponse(responseCode = "201", description = "Test created successfully")
+//    @ApiResponse(responseCode = "400", description = "Invalid request")
+//    @ApiResponse(responseCode = "500", description = "Internal server error")
+//    @ApiResponse(responseCode = "403", description = "Forbidden")
+//    @ApiResponse(responseCode = "401", description = "Unauthorized")
+//    public ResponseEntity<ProgressTrackingDTO> saveProgressByUserId(@RequestBody ProgressTrackingDTO progressDTO, @RequestParam String userId, @RequestParam exerciseId) {
+//
+//        // Kontrollo validitetin e ID-së së përdoruesit
+//        if (userId == null || userId.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//        }
+//
+//
+//        ProgressTrackingDTO savedprogressuserid = progressTrackingService.saveProgressByExerciseIdAndUserId(progressDTO, userId, exerciseId);
+//        return ResponseEntity
+//                .status(HttpStatus.CREATED)
+//                .body(savedprogressuserid);
+//
+//    }
+
+
 
 
 

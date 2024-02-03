@@ -66,14 +66,9 @@ public class ProgressTrackingEntity {
     @JoinColumn(name = "exercise_session_id")
     private ExerciseSessionEntity exerciseSession;
 
-    @Column(name = "user_id")
-    private String userId;
-
-
-//    public void setExerciseSession(ExerciseSessionEntity exerciseSession) {
-//        this.exerciseSession = exerciseSession;
-//        exerciseSession.getProgressTrackings().add(this);
-//    }
+//    @ManyToOne
+//    @JoinColumn(name = "user_id", nullable = false)
+//    private UserEntity user;
 
 
 }

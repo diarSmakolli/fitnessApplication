@@ -22,6 +22,7 @@ public class ProgressTrackingMapper {
                 .build();
     }
 
+
     public ProgressTrackingEntity mapToEntity(ProgressTrackingDTOSave progressTrackingDTO) {
         return ProgressTrackingEntity.builder()
                 .weight(progressTrackingDTO.getWeight())

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -53,12 +54,55 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
 
 
     @Override
+    @Transactional
+    public ProgressTrackingDTO saveProgressByExerciseId(ProgressTrackingDTOSave progressDTO, String exerciseSessionId) {
+        try {
+            ExerciseSessionEntity exercise = exerciseSessionRepository.findById(exerciseSessionId)
+                    .orElseThrow(() -> new EntityNotFoundException("Exercise not found" + exerciseSessionId));
+
+            ProgressTrackingEntity progress = progressTrackingMapper.mapToEntity(progressDTO);
+            progress.setExerciseSession(exercise);
+
+            ProgressTrackingEntity savedProgress = progressTrackingRepository.save(progress);
+            return progressTrackingMapper.mapToDTO(savedProgress);
+        } catch (DataAccessException ex) {
+            logAndThrowInternalServerError("Error saving progress", ex);
+            return null;
+        } catch (BadRequestException ex) {
+            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+            return null;
+        }
+    }
+
+
+    @Override
     public List<ProgressTrackingDTO> getProgressesByExerciseIdAndUserId(String exerciseId, String userId) {
         List<ProgressTrackingEntity> progressEntities = progressTrackingRepository.findAllByExerciseIdAndUserId(exerciseId, userId);
         return progressEntities.stream()
                 .map(progressTrackingMapper::mapToDTO)
                 .collect(Collectors.toList());
     }
+
+
+
+    @Override
+    @Transactional
+    public ProgressTrackingDTO saveProgress(ProgressTrackingDTOSave progressDTO) {
+        try {
+            ProgressTrackingEntity progress = progressTrackingMapper.mapToEntity(progressDTO);
+            progress.setCreatedAt(new Date());
+            ProgressTrackingEntity savedProgress = progressTrackingRepository.save(progress);
+            return progressTrackingMapper.mapToDTO(savedProgress);
+        } catch (DataAccessException ex) {
+            logAndThrowInternalServerError("Error saving progress", ex);
+            return null;
+        } catch (BadRequestException ex) {
+            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+            return null;
+        }
+    }
+
+
 
 
 
@@ -106,22 +150,22 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
         return buildCommonResponse(ProgressTrackingDTOS, progressTrackingPage);
     }
 
-    @Override
-    @Transactional
-    public ProgressTrackingDTO saveProgress(ProgressTrackingDTOSave progressDTO) {
-        try {
-            ProgressTrackingEntity progress = progressTrackingMapper.mapToEntity(progressDTO);
-            progress.setCreatedAt(new Date());
-            ProgressTrackingEntity savedProgress = progressTrackingRepository.save(progress);
-            return progressTrackingMapper.mapToDTO(savedProgress);
-        } catch (DataAccessException ex) {
-            logAndThrowInternalServerError("Error saving progress", ex);
-            return null;
-        } catch (BadRequestException ex) {
-            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
-            return null;
-        }
-    }
+//    @Override
+//    @Transactional
+//    public ProgressTrackingDTO saveProgress(ProgressTrackingDTOSave progressDTO) {
+//        try {
+//            ProgressTrackingEntity progress = progressTrackingMapper.mapToEntity(progressDTO);
+//            progress.setCreatedAt(new Date());
+//            ProgressTrackingEntity savedProgress = progressTrackingRepository.save(progress);
+//            return progressTrackingMapper.mapToDTO(savedProgress);
+//        } catch (DataAccessException ex) {
+//            logAndThrowInternalServerError("Error saving progress", ex);
+//            return null;
+//        } catch (BadRequestException ex) {
+//            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+//            return null;
+//        }
+//    }
 
     @Override
     @Transactional

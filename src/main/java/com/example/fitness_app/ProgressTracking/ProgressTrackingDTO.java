@@ -41,5 +41,6 @@ public class ProgressTrackingDTO {
     @Nullable
     private String deletedBy;
 
+    private String exerciseSessionId;
 
 }

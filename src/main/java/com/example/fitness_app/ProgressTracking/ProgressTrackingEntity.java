@@ -61,6 +61,10 @@ public class ProgressTrackingEntity {
     @Nullable
     private String deletedBy;
 
+    @ManyToOne
+    @JoinColumn(name = "exercise_session_id")
+    private ExerciseSessionEntity exerciseSession;
+
 //    public void setExerciseSession(ExerciseSessionEntity exerciseSession) {
 //        this.exerciseSession = exerciseSession;
 //        exerciseSession.getProgressTrackings().add(this);

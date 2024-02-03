@@ -29,4 +29,28 @@ public class ProgressTrackingController {
     }
 
 
+    @PostMapping("/save")
+    @ApiResponse(responseCode = "201", description = "Progress saved successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid request")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    @ApiResponse(responseCode = "403", description = "Forbidden")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    public ResponseEntity<ProgressTrackingDTO> saveProgress(@RequestBody ProgressTrackingDTOSave progressDTO,
+                                                            @RequestParam String exerciseSessionId,
+                                                            @RequestParam String userId) {
+        try {
+            ProgressTrackingDTO savedProgress = progressTrackingService.saveProgress(progressDTO, exerciseSessionId, userId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedProgress);
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (BadRequestException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+
+
 }

@@ -1,5 +1,6 @@
 package com.example.fitness_app.ExerciseSession;
 
+import com.example.fitness_app.User.UserEntity;
 import lombok.*;
 import org.apache.james.mime4j.dom.datetime.DateTime;
 import org.springframework.lang.Nullable;
@@ -60,4 +61,10 @@ public class ExerciseSessionEntity {
     @Column(name = "deleted_by")
     @Nullable
     private String deletedBy;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+
 }

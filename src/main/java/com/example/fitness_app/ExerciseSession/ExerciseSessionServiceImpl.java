@@ -1,6 +1,8 @@
 package com.example.fitness_app.ExerciseSession;
 
 import com.example.fitness_app.Test.TestServiceImpl;
+import com.example.fitness_app.User.UserEntity;
+import com.example.fitness_app.User.UserRepository;
 import com.example.fitness_app.common.CommonResponseDTO;
 import com.example.fitness_app.common.ValidationUtilsDTO;
 import com.example.fitness_app.exceptions.BadRequestException;
@@ -30,11 +32,69 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
 
     private final ExerciseSessionRepository exerciseSessionRepository;
 
-    public ExerciseSessionServiceImpl(ExerciseSessionMapper exerciseSessionMapper, ExerciseSessionRepository exerciseSessionRepository) {
+    private final UserRepository userRepository;
+
+    public ExerciseSessionServiceImpl(ExerciseSessionMapper exerciseSessionMapper, ExerciseSessionRepository exerciseSessionRepository, UserRepository userRepository) {
         this.exerciseSessionMapper = exerciseSessionMapper;
         this.exerciseSessionRepository = exerciseSessionRepository;
+        this.userRepository = userRepository;
     }
 
+
+    @Override
+    @Transactional
+    public ExerciseSessionDTO saveExerciseByUserId(ExerciseSessionDTOSave exerciseDTO, String userId) {
+        try {
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found" + userId));
+
+            ExerciseSessionEntity exercise = exerciseSessionMapper.mapToEntity(exerciseDTO);
+            exercise.setUser(user);
+            exercise.setCreatedAt(new Date());
+            exercise.setCreatedBy(user.getFirstname());
+
+            ExerciseSessionEntity savedExercise = exerciseSessionRepository.save(exercise);
+            return exerciseSessionMapper.mapToDTO(savedExercise);
+        } catch (DataAccessException ex) {
+            logAndThrowInternalServerError("Error saving exercise", ex);
+            return null;
+        } catch (BadRequestException ex) {
+            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+            return null;
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public ExerciseSessionDTO getExerciseByIdAndUserId(String exerciseId, String userId) {
+        ExerciseSessionEntity exercise = exerciseSessionRepository.findExerciseByIdAndUserIdAndDeletedAtIsNull(exerciseId, userId);
+
+        if(exercise == null) {
+            return null;
+        }
+
+        return exerciseSessionMapper.mapToDTO(exercise);
+    }
+
+
+    @Override
+    @Transactional
+    public List<ExerciseSessionDTO> getAllExercisesByUserId(String userId) {
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
+
+
+        List<ExerciseSessionEntity> exerciseSessions = exerciseSessionRepository.findAllByUserIdAndDeletedAtIsNull(userId);
+
+
+        List<ExerciseSessionDTO> exerciseSessionDTOs = exerciseSessions.stream()
+                .map(exerciseSessionMapper::mapToDTO)
+                .collect(Collectors.toList());
+
+        return exerciseSessionDTOs;
+    }
 
 
 
@@ -43,6 +103,7 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
     public ExerciseSessionDTO saveExercise(ExerciseSessionDTOSave exerciseDTO) {
         try {
             ExerciseSessionEntity exercise = exerciseSessionMapper.mapToEntity(exerciseDTO);
+            exercise.setCreatedAt(new Date());
             ExerciseSessionEntity savedExercise = exerciseSessionRepository.save(exercise);
             return exerciseSessionMapper.mapToDTO(savedExercise);
         } catch (DataAccessException ex) {
@@ -107,7 +168,6 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
 
             exerciseSessionRepository.save(existingExercise);
 
-
             logger.info("Exercise deleted successfully: " + id);
             return existingExercise;
         } catch (DataAccessException ex) {
@@ -142,7 +202,6 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
             throw new EntityNotFoundException("Exercise has been deleted");
         }
     }
-
 
 
     private void logAndThrowEntityNotFoundException(String message) {

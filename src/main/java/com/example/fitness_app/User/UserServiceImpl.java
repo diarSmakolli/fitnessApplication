@@ -88,13 +88,15 @@ public class UserServiceImpl implements UserService {
             userEntity.setId(userId);
             userEntity.setUsername(userDTOSave.getUsername());
             userEntity.setEmail(userDTOSave.getEmail());
+            userEntity.setFirstname(userDTOSave.getFirstname());
+            userEntity.setLastname(userDTOSave.getLastname());
 
             userRepository.save(userEntity);
 
         }
         catch (DataAccessException ex) {
             // Handle data access exceptions
-            logAndThrowInternalServerError("Error saving test", ex);
+            logAndThrowInternalServerError("Error saving user", ex);
         } catch (BadRequestException ex) {
             // Handle validation exceptions
             logAndThrowBadRequest("Invalid request: " + ex.getMessage());
@@ -105,7 +107,6 @@ public class UserServiceImpl implements UserService {
 
     public String loginUser(UserLoginDTO userLoginDTO) {
         try {
-
             Keycloak keycloak = KeycloakBuilder.builder()
                     .serverUrl(keycloakConfig.getServerUrl())
                     .realm(keycloakConfig.getRealm())
@@ -121,11 +122,9 @@ public class UserServiceImpl implements UserService {
             return tokenResponse.getToken();
         }
         catch (DataAccessException ex) {
-            // Handle data access exceptions
-            logAndThrowInternalServerError("Error saving test", ex);
+            logAndThrowInternalServerError("Error saving user", ex);
             return null;
         } catch (BadRequestException ex) {
-            // Handle validation exceptions
             logAndThrowBadRequest("Invalid request: " + ex.getMessage());
             return null;
         }

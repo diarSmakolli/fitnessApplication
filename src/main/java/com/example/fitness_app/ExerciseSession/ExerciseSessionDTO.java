@@ -17,7 +17,6 @@ public class ExerciseSessionDTO {
 
     private String id;
 
-
     private String activityType;
 
     private Integer duration;
@@ -45,6 +44,8 @@ public class ExerciseSessionDTO {
 
     @Nullable
     private String deletedBy;
+
+    private String userId;
 
 
 }

@@ -1,5 +1,11 @@
 package com.example.fitness_app.ProgressTracking;
+import com.example.fitness_app.ExerciseSession.ExerciseSessionDTO;
+import com.example.fitness_app.ExerciseSession.ExerciseSessionEntity;
+import com.example.fitness_app.ExerciseSession.ExerciseSessionRepository;
+import com.example.fitness_app.ExerciseSession.ExerciseSessionService;
 import com.example.fitness_app.Test.TestServiceImpl;
+import com.example.fitness_app.User.UserEntity;
+import com.example.fitness_app.User.UserRepository;
 import com.example.fitness_app.common.CommonResponseDTO;
 import com.example.fitness_app.common.ValidationUtilsDTO;
 import com.example.fitness_app.exceptions.BadRequestException;
@@ -29,10 +35,37 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
 
     private final ProgressTrackingRepository progressTrackingRepository;
 
-    public ProgressTrackingServiceImpl(ProgressTrackingMapper progressTrackingMapper, ProgressTrackingRepository progressTrackingRepository) {
+    private final ExerciseSessionRepository exerciseSessionRepository;
+
+    private final ExerciseSessionService exerciseSessionService;
+
+    public ProgressTrackingServiceImpl(ProgressTrackingMapper progressTrackingMapper,
+                                       ProgressTrackingRepository progressTrackingRepository,
+                                       ExerciseSessionService exerciseSessionService,
+                                       ExerciseSessionRepository exerciseSessionRepository
+    ) {
         this.progressTrackingMapper = progressTrackingMapper;
         this.progressTrackingRepository = progressTrackingRepository;
+        this.exerciseSessionService = exerciseSessionService;
+        this.exerciseSessionRepository = exerciseSessionRepository;
     }
+
+
+    @Override
+    @Transactional
+    public ProgressTrackingDTO saveProgress(ProgressTrackingDTOSave progressDTO, String exerciseSessionId, String userId) {
+        ProgressTrackingEntity progressEntity = progressTrackingMapper.mapToEntity(progressDTO);
+
+        ExerciseSessionEntity exerciseSessionEntity = exerciseSessionRepository.findExerciseByIdAndUserIdAndDeletedAtIsNull(exerciseSessionId, userId);
+
+        progressEntity.setExerciseSession(exerciseSessionEntity);
+
+        ProgressTrackingEntity savedProgress = progressTrackingRepository.save(progressEntity);
+
+        return progressTrackingMapper.mapToDTO(savedProgress);
+    }
+
+
 
 
 }

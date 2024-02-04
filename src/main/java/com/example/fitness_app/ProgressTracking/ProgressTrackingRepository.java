@@ -25,4 +25,13 @@ public interface ProgressTrackingRepository extends JpaRepository<ProgressTracki
     List<ProgressTrackingEntity> findAllByExerciseIdAndUserId(@Param("exerciseId") String exerciseId, @Param("userId") String userId);
 
 
+//    @Query("SELECT p FROM ProgressTrackingEntity p WHERE p.id = :exerciseId AND e.user.id = :userId AND e.deletedAt IS NULL")
+//    ExerciseSessionEntity findExerciseByIdAndUserIdAndDeletedAtIsNull(@Param("exerciseId") String exerciseId, @Param("userId") String userId);
+
+    @Query("SELECT pt FROM ProgressTrackingEntity pt WHERE pt.exerciseSession.id = :exerciseId AND pt.deletedAt IS NULL")
+    List<ProgressTrackingEntity> findProgressesByExerciseIdAndDeletedAtIsNull(@Param("exerciseId") String exerciseId);
+
+//    @Query("SELECT p FROM ProgressTrackingEntity p WHERE p.exerciseSession.id = :exerciseId AND p.deletedAt IS NULL")
+//    ProgressTrackingEntity findProgressByExerciseIdAndDeletedAtIsNull(@Param("exerciseSessionId") String exerciseSessionId);
+
 }

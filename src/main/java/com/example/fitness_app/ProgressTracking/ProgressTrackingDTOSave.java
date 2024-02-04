@@ -14,4 +14,7 @@ import java.util.Date;
 public class ProgressTrackingDTOSave {
     private Double weight;
     private Integer bodyMassIndex;
+    private Double muscleMass;
+    private Double fatPercentage;
+    private Double waterPercentage;
 }

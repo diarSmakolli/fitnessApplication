@@ -1,4 +1,5 @@
 package com.example.fitness_app.ProgressTracking;
+import com.example.fitness_app.ExerciseSession.ExerciseSessionDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,12 @@ public class ProgressTrackingDTO {
     private Double weight;
 
     private Integer bodyMassIndex;
+
+    private Double muscleMass;
+
+    private Double fatPercentage;
+
+    private Double waterPercentage;
 
     @Nullable
     private Date otherMetrics;
@@ -42,6 +49,8 @@ public class ProgressTrackingDTO {
     private String deletedBy;
 
     private String exerciseSessionId;
+
+    private ExerciseSessionDTO exerciseSessionDTO;
 
 //    private String userId;
 

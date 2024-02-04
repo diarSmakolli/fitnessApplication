@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -67,14 +68,22 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
 
     @Override
     @Transactional
-    public ExerciseSessionDTO getExerciseByIdAndUserId(String exerciseId, String userId) {
-        ExerciseSessionEntity exercise = exerciseSessionRepository.findExerciseByIdAndUserIdAndDeletedAtIsNull(exerciseId, userId);
+    public ExerciseSessionDTO getExerciseByIdAndUserId(String id, String userId) {
 
-        if(exercise == null) {
+        try {
+            ExerciseSessionEntity exercise = exerciseSessionRepository.findExerciseByIdAndUserIdAndDeletedAtIsNull(id, userId);
+
+
+            if (exercise == null) {
+                logAndThrowEntityNotFoundException("Exercise not found with id: " + id + " and userId: " + userId);
+            }
+
+            return exerciseSessionMapper.mapToDTO(exercise);
+        }
+        catch(DataAccessException ex) {
+            logAndThrowInternalServerError("Error retrieving exercise", ex);
             return null;
         }
-
-        return exerciseSessionMapper.mapToDTO(exercise);
     }
 
 
@@ -117,14 +126,20 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
 
     @Override
     @Transactional
-    public ExerciseSessionDTO updateExercise(String id, ExerciseSessionDTOSave exerciseSessionDTO) {
+    public ExerciseSessionDTO updateExercise(String id, ExerciseSessionDTOSave exerciseSessionDTO, String userId) {
         ExerciseSessionEntity existingExercise = findExerciseById(id);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found" + userId));
 
         existingExercise.setActivityType(exerciseSessionDTO.getActivityType());
         existingExercise.setDuration(exerciseSessionDTO.getDuration());
         existingExercise.setDistance(exerciseSessionDTO.getDistance());
         existingExercise.setWeight(exerciseSessionDTO.getWeight());
         existingExercise.setNotes(exerciseSessionDTO.getNotes());
+        existingExercise.setUpdatedAt(new Date());
+        existingExercise.setUser(user);
+        existingExercise.setUpdatedBy(user.getFirstname());
 
         ExerciseSessionEntity updatedExercise = exerciseSessionRepository.save(existingExercise);
 
@@ -158,11 +173,18 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
 
     @Override
     @Transactional
-    public ExerciseSessionEntity deleteExercise(String id) {
+    public ExerciseSessionEntity deleteExercise(String id, String userId) {
         try {
+
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found" + userId));
+
+
             ExerciseSessionEntity existingExercise = findExerciseById(id);
 
             existingExercise.setDeletedAt(new Date());
+            existingExercise.setUser(user);
+            existingExercise.setDeletedBy(user.getFirstname());
 
             exerciseSessionRepository.save(existingExercise);
 

@@ -13,4 +13,6 @@ public interface ProgressTrackingService {
     ProgressTrackingDTO saveProgress(ProgressTrackingDTOSave progressDTO);
 //    ProgressTrackingDTO saveProgressByExerciseIdAndUserId(ProgressTrackingDTO progressDTO,String exerciseId, String userId);
     ProgressTrackingDTO saveProgressByExerciseId(ProgressTrackingDTOSave progressDTO, String exerciseSessionId);
+
+    List<ProgressTrackingDTO> getProgressesByExerciseId(String exerciseId);
 }

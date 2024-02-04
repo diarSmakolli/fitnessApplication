@@ -83,6 +83,15 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<ProgressTrackingDTO> getProgressesByExerciseId(String exerciseId) {
+        List<ProgressTrackingEntity> progresses = progressTrackingRepository.findProgressesByExerciseIdAndDeletedAtIsNull(exerciseId);
+
+        return progresses.stream()
+                .map(progressTrackingMapper::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
 
 
     @Override

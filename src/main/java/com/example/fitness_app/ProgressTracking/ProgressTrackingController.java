@@ -40,7 +40,18 @@ public class ProgressTrackingController {
         return new ResponseEntity<>(progressDTOs, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/saveByExerciseId")
+    @GetMapping("/exercise/{exerciseId}")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved progress by ID")
+    @ApiResponse(responseCode = "404", description = "Progress not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    public ResponseEntity<List<ProgressTrackingDTO>> getProgressesByExerciseId(@RequestParam String exerciseId) {
+        List<ProgressTrackingDTO> progressTrackingList = progressTrackingService.getProgressesByExerciseId(exerciseId);
+        return ResponseEntity.ok(progressTrackingList);
+    }
+
+
+
+    @PostMapping(value = "/save/{exerciseSessionId}")
     @ApiResponse(responseCode = "201", description = "Test created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid request")
     @ApiResponse(responseCode = "500", description = "Internal server error")

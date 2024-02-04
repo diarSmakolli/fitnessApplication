@@ -34,6 +34,15 @@ public class ProgressTrackingEntity {
     @Column(name = "body_mass_index")
     private Integer bodyMassIndex;
 
+    @Column(name = "muscle_mass")
+    private Double muscleMass;
+
+    @Column(name = "fat_percentage")
+    private Double fatPercentage;
+
+    @Column(name = "water_percentage")
+    private Double waterPercentage;
+
     @Column(name = "other_metrics")
     @Nullable
     private Date otherMetrics;

@@ -40,9 +40,9 @@ public class ExerciseSessionController {
         return ResponseEntity.ok(exerciseSessionDTO);
     }
 
-    @GetMapping("/getByUserId}")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved test by ID")
-    @ApiResponse(responseCode = "404", description = "Test not found")
+    @GetMapping("/get/user/{userId}")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved exercise by ID")
+    @ApiResponse(responseCode = "404", description = "Exercise not found")
     @ApiResponse(responseCode = "500", description = "Internal server error")
     public ResponseEntity<List<ExerciseSessionDTO>> getAllExercisesByUserId(@RequestParam String userId) {
 
@@ -50,15 +50,15 @@ public class ExerciseSessionController {
         return ResponseEntity.ok(exerciseSessionList);
     }
 
-    @GetMapping("/getByIdAndUserId")
+    @GetMapping("/get/{id}/user/{userId}")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved exercise by ID and user ID")
     @ApiResponse(responseCode = "404", description = "Exercise not found")
     @ApiResponse(responseCode = "500", description = "Internal server error")
     public ResponseEntity<ExerciseSessionDTO> getExerciseByIdAndUserId(
-            @RequestParam String exerciseId,
+            @RequestParam String id,
             @RequestParam String userId) {
 
-        ExerciseSessionDTO exercise = exerciseSessionService.getExerciseByIdAndUserId(exerciseId, userId);
+        ExerciseSessionDTO exercise = exerciseSessionService.getExerciseByIdAndUserId(id, userId);
 
         if (exercise != null) {
             return ResponseEntity.ok(exercise);
@@ -83,7 +83,7 @@ public class ExerciseSessionController {
     }
 
 
-    @PostMapping(value = "/save-by-user-id")
+    @PostMapping(value = "/save/user/{userId}")
     @ApiResponse(responseCode = "201", description = "Test created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid request")
     @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -103,14 +103,32 @@ public class ExerciseSessionController {
 
     }
 
-    @DeleteMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/user/{userId}")
+    @ApiResponse(responseCode = "200", description = "Exercise updated successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid request")
+    @ApiResponse(responseCode = "404", description = "Exercise not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    @ApiResponse(responseCode = "403", description = "Forbidden")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    public ResponseEntity<ExerciseSessionDTO> updateExercise(@PathVariable String id, @RequestBody ExerciseSessionDTOSave exerciseSessionDTO, @RequestParam String userId) {
+
+        ExerciseSessionDTO updatedExerciseSessionDTO = exerciseSessionService.updateExercise(id, exerciseSessionDTO, userId);
+        return ResponseEntity.ok(updatedExerciseSessionDTO);
+
+    }
+
+    @DeleteMapping(value = "/{id}/user/{userId}")
     @ApiResponse(responseCode = "404", description = "Exercise not found")
     @ApiResponse(responseCode = "200", description = "Successfully deleted exercise")
     @ApiResponse(responseCode = "400", description = "Invalid request")
     @ApiResponse(responseCode = "403", description = "Forbidden")
     @ApiResponse(responseCode = "401", description = "Unauthorized")
-    public ResponseEntity<ExerciseSessionEntity> deleteExercise(@PathVariable String id) {
-        ExerciseSessionEntity deletedExercise = exerciseSessionService.deleteExercise(id);
+    public ResponseEntity<ExerciseSessionEntity> deleteExercise(@PathVariable String id, @RequestParam String userId) {
+        if(userId == null || userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        ExerciseSessionEntity deletedExercise = exerciseSessionService.deleteExercise(id, userId);
         if (deletedExercise != null) {
             return ResponseEntity.ok(deletedExercise);
         } else {
@@ -134,19 +152,7 @@ public class ExerciseSessionController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @PutMapping(value = "/{id}")
-    @ApiResponse(responseCode = "200", description = "Exercise updated successfully")
-    @ApiResponse(responseCode = "400", description = "Invalid request")
-    @ApiResponse(responseCode = "404", description = "Exercise not found")
-    @ApiResponse(responseCode = "500", description = "Internal server error")
-    @ApiResponse(responseCode = "403", description = "Forbidden")
-    @ApiResponse(responseCode = "401", description = "Unauthorized")
-    public ResponseEntity<ExerciseSessionDTO> updateExercise(@PathVariable String id, @RequestBody ExerciseSessionDTOSave exerciseSessionDTO) {
 
-        ExerciseSessionDTO updatedExerciseSessionDTO = exerciseSessionService.updateExercise(id, exerciseSessionDTO);
-        return ResponseEntity.ok(updatedExerciseSessionDTO);
-
-    }
 
 
 

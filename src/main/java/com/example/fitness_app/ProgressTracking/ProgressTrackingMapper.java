@@ -13,6 +13,9 @@ public class ProgressTrackingMapper {
                 .weight(progressTrackingEntity.getWeight())
                 .bodyMassIndex(progressTrackingEntity.getBodyMassIndex())
                 .otherMetrics(progressTrackingEntity.getOtherMetrics())
+                .muscleMass(progressTrackingEntity.getMuscleMass())
+                .fatPercentage(progressTrackingEntity.getFatPercentage())
+                .waterPercentage(progressTrackingEntity.getWaterPercentage())
                 .createdAt(progressTrackingEntity.getCreatedAt())
                 .createdBy(progressTrackingEntity.getCreatedBy())
                 .updatedAt(progressTrackingEntity.getUpdatedAt())
@@ -27,6 +30,9 @@ public class ProgressTrackingMapper {
         return ProgressTrackingEntity.builder()
                 .weight(progressTrackingDTO.getWeight())
                 .bodyMassIndex(progressTrackingDTO.getBodyMassIndex())
+                .muscleMass(progressTrackingDTO.getMuscleMass())
+                .fatPercentage(progressTrackingDTO.getFatPercentage())
+                .waterPercentage(progressTrackingDTO.getWaterPercentage())
                 .build();
     }
 

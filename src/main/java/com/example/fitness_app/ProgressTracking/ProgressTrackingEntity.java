@@ -75,6 +75,11 @@ public class ProgressTrackingEntity {
     @JoinColumn(name = "exercise_session_id")
     private ExerciseSessionEntity exerciseSession;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+
 //    @ManyToOne
 //    @JoinColumn(name = "user_id", nullable = false)
 //    private UserEntity user;

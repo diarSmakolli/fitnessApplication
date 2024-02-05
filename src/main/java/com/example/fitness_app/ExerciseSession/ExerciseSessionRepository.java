@@ -24,4 +24,7 @@ public interface ExerciseSessionRepository extends JpaRepository<ExerciseSession
     ExerciseSessionEntity findExerciseByIdAndUserIdAndDeletedAtIsNull(@Param("exerciseId") String exerciseId, @Param("userId") String userId);
 
 
+
+
+
 }

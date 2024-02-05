@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +71,26 @@ public class ProgressTrackingController {
 
     }
 
+    @PostMapping(value = "/save/exercise/{exerciseId}/user/{userId}")
+    @ApiResponse(responseCode = "201", description = "Test created successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid request")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    @ApiResponse(responseCode = "403", description = "Forbidden")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    public ResponseEntity<ProgressTrackingDTO> saveProgressByExerciseIdAndUserId(@RequestBody ProgressTrackingDTOSave progressTrackingDTOSave, @RequestParam String exerciseSessionId ,@RequestParam String userId) {
+
+        if(userId == null || userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        ProgressTrackingDTO savedProgressByExerciseIdAndUserId = progressTrackingService.saveProgressByExerciseIdAndUserId(progressTrackingDTOSave, exerciseSessionId, userId);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(savedProgressByExerciseIdAndUserId);
+
+    }
+
     @GetMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved progress by ID")
     @ApiResponse(responseCode = "404", description = "Progress not found")
@@ -79,14 +100,19 @@ public class ProgressTrackingController {
         return ResponseEntity.ok(progressTrackingDTO);
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}/{userId}")
     @ApiResponse(responseCode = "404", description = "Progress not found")
     @ApiResponse(responseCode = "200", description = "Successfully deleted progress")
     @ApiResponse(responseCode = "400", description = "Invalid request")
     @ApiResponse(responseCode = "403", description = "Forbidden")
     @ApiResponse(responseCode = "401", description = "Unauthorized")
-    public ResponseEntity<ProgressTrackingEntity> deleteProgress(@PathVariable String id) {
-        ProgressTrackingEntity deletedProgressTracking = progressTrackingService.deleteProgress(id);
+    public ResponseEntity<ProgressTrackingEntity> deleteProgress(@PathVariable String id, @PathVariable String userId) {
+
+        if(userId == null || userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        ProgressTrackingEntity deletedProgressTracking = progressTrackingService.deleteProgress(id, userId);
         if (deletedProgressTracking != null) {
             return ResponseEntity.ok(deletedProgressTracking);
         } else {
@@ -111,16 +137,16 @@ public class ProgressTrackingController {
     }
 
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/{userId}")
     @ApiResponse(responseCode = "200", description = "Progress updated successfully")
     @ApiResponse(responseCode = "400", description = "Invalid request")
     @ApiResponse(responseCode = "404", description = "Progress not found")
     @ApiResponse(responseCode = "500", description = "Internal server error")
     @ApiResponse(responseCode = "403", description = "Forbidden")
     @ApiResponse(responseCode = "401", description = "Unauthorized")
-    public ResponseEntity<ProgressTrackingDTO> updateProgress(@PathVariable String id, @RequestBody ProgressTrackingDTOSave progressTrackingDTO) {
+    public ResponseEntity<ProgressTrackingDTO> updateProgress(@PathVariable String id, @RequestBody ProgressTrackingDTOSave progressTrackingDTO, @PathVariable String userId) {
 
-        ProgressTrackingDTO updatedProgressTrackingDTO = progressTrackingService.updateProgresses(id, progressTrackingDTO);
+        ProgressTrackingDTO updatedProgressTrackingDTO = progressTrackingService.updateProgresses(id, progressTrackingDTO,userId);
         return ResponseEntity.ok(updatedProgressTrackingDTO);
 
     }

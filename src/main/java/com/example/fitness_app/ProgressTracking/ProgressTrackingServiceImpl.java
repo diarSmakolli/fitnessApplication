@@ -8,6 +8,7 @@ import com.example.fitness_app.common.ValidationUtilsDTO;
 import com.example.fitness_app.exceptions.BadRequestException;
 import com.example.fitness_app.exceptions.EntityNotFoundException;
 import com.example.fitness_app.exceptions.InternalServerErrorException;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -37,19 +38,23 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
 
     private final ExerciseSessionService exerciseSessionService;
 
+    private final ExerciseSessionMapper exerciseSessionMapper;
+
     private final UserRepository userRepository;
 
     public ProgressTrackingServiceImpl(ProgressTrackingMapper progressTrackingMapper,
                                        ProgressTrackingRepository progressTrackingRepository,
                                        ExerciseSessionService exerciseSessionService,
                                        ExerciseSessionRepository exerciseSessionRepository,
-                                       UserRepository userRepository
+                                       UserRepository userRepository,
+                                       ExerciseSessionMapper exerciseSessionMapper
     ) {
         this.progressTrackingMapper = progressTrackingMapper;
         this.progressTrackingRepository = progressTrackingRepository;
         this.exerciseSessionService = exerciseSessionService;
         this.exerciseSessionRepository = exerciseSessionRepository;
         this.userRepository = userRepository;
+        this.exerciseSessionMapper = exerciseSessionMapper;
     }
 
 
@@ -61,6 +66,34 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
                     .orElseThrow(() -> new EntityNotFoundException("Exercise not found" + exerciseSessionId));
 
             ProgressTrackingEntity progress = progressTrackingMapper.mapToEntity(progressDTO);
+            progress.setExerciseSession(exercise);
+            progress.setCreatedAt(new Date());
+
+            ProgressTrackingEntity savedProgress = progressTrackingRepository.save(progress);
+            return progressTrackingMapper.mapToDTO(savedProgress);
+        } catch (DataAccessException ex) {
+            logAndThrowInternalServerError("Error saving progress", ex);
+            return null;
+        } catch (BadRequestException ex) {
+            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    @Transactional
+    public ProgressTrackingDTO saveProgressByExerciseIdAndUserId(ProgressTrackingDTOSave progressTrackingDTO, String exerciseSessionId, String userId) {
+        try {
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found" + userId));
+
+            ExerciseSessionEntity exercise = exerciseSessionRepository.findById(exerciseSessionId)
+                    .orElseThrow(() -> new EntityNotFoundException("Exercise not found" + exerciseSessionId));
+
+            ProgressTrackingEntity progress = progressTrackingMapper.mapToEntity(progressTrackingDTO);
+            progress.setUser(user);
+            progress.setCreatedAt(new Date());
+            progress.setCreatedBy(user.getFirstname());
             progress.setExerciseSession(exercise);
 
             ProgressTrackingEntity savedProgress = progressTrackingRepository.save(progress);
@@ -74,6 +107,31 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
         }
     }
 
+//    @Override
+//    @Transactional
+//    public ProgressTrackingDTO saveProgressByExerciseIdAndUserId(ProgressTrackingDTOSave progressTrackingDTO, String exerciseSessionId, String userId) {
+//        try {
+//            ExerciseSessionEntity exerciseSessionEntity = exerciseSessionRepository.findById(exerciseSessionId)
+//                    .orElseThrow(() -> new EntityNotFoundException("Exercise not found" + exerciseSessionId));
+//
+//            UserEntity user = userRepository.findById(userId)
+//                    .orElseThrow(() -> new EntityNotFoundException("User not found" + userId));
+//
+//            ProgressTrackingEntity progressTrackingEntity = progressTrackingMapper.mapToEntity(progressTrackingDTO);
+//            progressTrackingEntity.setExerciseSession(exerciseSessionEntity);
+//            progressTrackingEntity.setCreatedAt(new Date());
+//
+//            return null;
+//        } catch(DataAccessException ex) {
+//            logAndThrowInternalServerError("Error saving progress", ex);
+//            return null;
+//        } catch(BadRequestException ex) {
+//            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+//            return null;
+//        }
+//    }
+
+
 
     @Override
     public List<ProgressTrackingDTO> getProgressesByExerciseIdAndUserId(String exerciseId, String userId) {
@@ -83,12 +141,26 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
                 .collect(Collectors.toList());
     }
 
+//    @Override
+//    public List<ProgressTrackingDTO> getProgressesByExerciseId(String exerciseId) {
+//        List<ProgressTrackingEntity> progresses = progressTrackingRepository.findProgressesByExerciseIdAndDeletedAtIsNull(exerciseId);
+//
+//        return progresses.stream()
+//                .map(progressTrackingMapper::mapToDTO)
+//                .collect(Collectors.toList());
+//    }
+
     @Override
     public List<ProgressTrackingDTO> getProgressesByExerciseId(String exerciseId) {
         List<ProgressTrackingEntity> progresses = progressTrackingRepository.findProgressesByExerciseIdAndDeletedAtIsNull(exerciseId);
 
         return progresses.stream()
-                .map(progressTrackingMapper::mapToDTO)
+                .map(progress -> {
+                    ProgressTrackingDTO progressDTO = progressTrackingMapper.mapToDTO(progress);
+                    // Set the exerciseSessionId directly in the DTO
+                    progressDTO.setExerciseSessionId(progress.getExerciseSession().getId());
+                    return progressDTO;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -117,11 +189,18 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
 
     @Override
     @Transactional
-    public ProgressTrackingEntity deleteProgress(String id) {
+    public ProgressTrackingEntity deleteProgress(String id, String userId) {
         try {
             ProgressTrackingEntity existingProgress = findProgressById(id);
 
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found" + userId));
+
+
             existingProgress.setDeletedAt(new Date());
+            existingProgress.setUser(user);
+            existingProgress.setDeletedBy(user.getFirstname());
+
 
             progressTrackingRepository.save(existingProgress);
 
@@ -178,11 +257,17 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
 
     @Override
     @Transactional
-    public ProgressTrackingDTO updateProgresses(String id, ProgressTrackingDTOSave progressTrackingDTO) {
+    public ProgressTrackingDTO updateProgresses(String id, ProgressTrackingDTOSave progressTrackingDTO, String userId) {
         ProgressTrackingEntity existingProgress = findProgressById(id);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found" + userId));
 
         existingProgress.setWeight(progressTrackingDTO.getWeight());
         existingProgress.setBodyMassIndex(progressTrackingDTO.getBodyMassIndex());
+        existingProgress.setUpdatedAt(new Date());
+        existingProgress.setUser(user);
+        existingProgress.setUpdatedBy(user.getFirstname());
 
         ProgressTrackingEntity updatedProgress = progressTrackingRepository.save(existingProgress);
 

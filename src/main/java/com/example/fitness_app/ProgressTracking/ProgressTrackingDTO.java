@@ -50,7 +50,7 @@ public class ProgressTrackingDTO {
 
     private String exerciseSessionId;
 
-    private ExerciseSessionDTO exerciseSessionDTO;
+    private String userId;
 
 //    private String userId;
 

@@ -21,7 +21,7 @@ public interface ProgressTrackingRepository extends JpaRepository<ProgressTracki
     @Query("SELECT pt FROM ProgressTrackingEntity pt " +
             "JOIN pt.exerciseSession e " +
             "JOIN e.user u " +
-            "WHERE e.id = :exerciseId AND u.id = :userId")
+            "WHERE e.id = :exerciseId AND u.id = :userId AND pt.deletedAt IS NULL")
     List<ProgressTrackingEntity> findAllByExerciseIdAndUserId(@Param("exerciseId") String exerciseId, @Param("userId") String userId);
 
 
@@ -33,5 +33,6 @@ public interface ProgressTrackingRepository extends JpaRepository<ProgressTracki
 
 //    @Query("SELECT p FROM ProgressTrackingEntity p WHERE p.exerciseSession.id = :exerciseId AND p.deletedAt IS NULL")
 //    ProgressTrackingEntity findProgressByExerciseIdAndDeletedAtIsNull(@Param("exerciseSessionId") String exerciseSessionId);
+
 
 }

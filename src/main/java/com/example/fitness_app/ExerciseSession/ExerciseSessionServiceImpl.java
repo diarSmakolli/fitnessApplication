@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -40,6 +42,51 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
         this.exerciseSessionRepository = exerciseSessionRepository;
         this.userRepository = userRepository;
     }
+
+    @Override
+    @Transactional
+    public List<ExerciseSessionDTO> getExercisesByActivityTypeAndUserId(String activityType) {
+        try {
+            List<ExerciseSessionEntity> exercisesByActivityType = exerciseSessionRepository.findByActivityTypeAndDeletedAtIsNull(activityType);
+
+            if(exercisesByActivityType.isEmpty()) {
+                throw new NotFoundException("No exercises found with activity type: " + activityType);
+            }
+
+            return exercisesByActivityType.stream().map(exerciseSessionMapper::mapToDTO).collect(Collectors.toList());
+        } catch(DataAccessException ex) {
+            logAndThrowInternalServerError("Error retrieving exercises by activity type", ex);
+            return Collections.emptyList();
+        } catch(BadRequestException ex) {
+            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    @Transactional
+    public List<ExerciseSessionDTO> getExercisesByMinDistance(Double distance) {
+        try {
+            List<ExerciseSessionEntity> exerciseByMinDistance = exerciseSessionRepository.findByDistanceGreaterThanEqual(distance);
+
+            if(exerciseByMinDistance.isEmpty()) {
+                throw new NotFoundException("No exercises found with distance greater than or equal to: " + distance);
+            }
+
+            return exerciseByMinDistance.stream()
+                    .map(exerciseSessionMapper::mapToDTO)
+                    .collect(Collectors.toList());
+
+        } catch(DataAccessException ex) {
+            logAndThrowInternalServerError("Error retrieving exercises by distance", ex);
+            return Collections.emptyList();
+        } catch(BadRequestException ex) {
+            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+            return Collections.emptyList();
+        }
+
+    }
+
 
 
     @Override

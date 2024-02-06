@@ -1,6 +1,7 @@
 package com.example.fitness_app.ExerciseSession;
 
 import com.example.fitness_app.common.CommonResponseDTO;
+import com.example.fitness_app.exceptions.InternalServerErrorException;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +32,25 @@ public class ExerciseSessionController {
 
         this.exerciseSessionService = exerciseSessionService;
     }
+
+    @GetMapping("/getActivityType")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved exercise by ID")
+    @ApiResponse(responseCode = "404", description = "Exercise not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    public ResponseEntity<List<ExerciseSessionDTO>> getExerciseByActivityType(@RequestParam String activityType) {
+        List<ExerciseSessionDTO> exerciseActivityTypeList = exerciseSessionService.getExercisesByActivityTypeAndUserId(activityType);
+        return ResponseEntity.ok(exerciseActivityTypeList);
+    }
+
+    @GetMapping("/getDistanceByMin")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved exercise by ID and user ID")
+    @ApiResponse(responseCode = "404", description = "Exercise not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    public ResponseEntity<List<ExerciseSessionDTO>> getExerciseByMinDistance(@RequestParam Double distance) {
+            List<ExerciseSessionDTO> exercises = exerciseSessionService.getExercisesByMinDistance(distance);
+            return ResponseEntity.ok(exercises);
+    }
+
 
     @GetMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved test by ID")
@@ -102,6 +123,7 @@ public class ExerciseSessionController {
                 .body(savedExerciseByUserId);
 
     }
+
 
     @PutMapping(value = "/{id}/user/{userId}")
     @ApiResponse(responseCode = "200", description = "Exercise updated successfully")

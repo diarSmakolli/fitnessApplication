@@ -23,8 +23,10 @@ public interface ExerciseSessionRepository extends JpaRepository<ExerciseSession
     @Query("SELECT e FROM ExerciseSessionEntity e WHERE e.id = :exerciseId AND e.user.id = :userId AND e.deletedAt IS NULL")
     ExerciseSessionEntity findExerciseByIdAndUserIdAndDeletedAtIsNull(@Param("exerciseId") String exerciseId, @Param("userId") String userId);
 
+//    List<ExerciseSessionEntity> findByActivityTypeAndUserIdAndDeletedAtIsEmpty(String activityType, String userId);
 
-
+    List<ExerciseSessionEntity> findByActivityTypeAndDeletedAtIsNull(String activityType);
+    List<ExerciseSessionEntity> findByDistanceGreaterThanEqual(Double distance);
 
 
 }

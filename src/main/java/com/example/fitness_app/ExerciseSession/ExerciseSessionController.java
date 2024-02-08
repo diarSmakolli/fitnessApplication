@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,17 @@ public class ExerciseSessionController {
 
         this.exerciseSessionService = exerciseSessionService;
     }
+
+    @GetMapping("/export-to-excel")
+    public void exportToExcel(HttpServletResponse response) throws IOException {
+        response.setContentType("application/octet-stream");
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=Exercises_information.xlsx";
+        response.setHeader(headerKey, headerValue);
+        exerciseSessionService.exportExerciseToExcel(response);
+    }
+
+
 
     @GetMapping("/getActivityType")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved exercise by ID")

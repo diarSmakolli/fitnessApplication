@@ -2,6 +2,8 @@ package com.example.fitness_app.ExerciseSession;
 
 import com.example.fitness_app.common.CommonResponseDTO;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 public interface ExerciseSessionService {
@@ -18,5 +20,6 @@ public interface ExerciseSessionService {
     List<ExerciseSessionDTO> getExercisesByDuration(Integer duration);
     List<ExerciseSessionDTO> getExercisesByDifficulty(Integer difficultyLevel);
     List<ExerciseSessionDTO> getExercisesByActivityTypeOrNotes(String search);
+    List<ExerciseSessionEntity> exportExerciseToExcel(HttpServletResponse response) throws IOException;
 
 }

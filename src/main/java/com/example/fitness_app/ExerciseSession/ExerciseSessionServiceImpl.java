@@ -8,6 +8,10 @@ import com.example.fitness_app.common.ValidationUtilsDTO;
 import com.example.fitness_app.exceptions.BadRequestException;
 import com.example.fitness_app.exceptions.EntityNotFoundException;
 import com.example.fitness_app.exceptions.InternalServerErrorException;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -17,7 +21,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -365,6 +372,18 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
                 .pageSize(exerciseSessionPage.getSize())
                 .build();
     }
+
+
+    // simple function to export the data to an excel file for findall.
+    public List<ExerciseSessionEntity> exportExerciseToExcel(HttpServletResponse response) throws IOException {
+        List<ExerciseSessionEntity> exercises = exerciseSessionRepository.findAll();
+        ExcelUtils exportUtils = new ExcelUtils(exercises);
+        exportUtils.exportDataToExcel(response);
+        return exercises;
+    }
+
+
+
 
 
 

@@ -90,6 +90,7 @@ public class UserServiceImpl implements UserService {
             userEntity.setEmail(userDTOSave.getEmail());
             userEntity.setFirstname(userDTOSave.getFirstname());
             userEntity.setLastname(userDTOSave.getLastname());
+            userEntity.setProfilePicture(userDTOSave.getProfilePicture());
 
             userRepository.save(userEntity);
 

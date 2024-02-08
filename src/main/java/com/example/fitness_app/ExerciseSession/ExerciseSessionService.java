@@ -15,5 +15,8 @@ public interface ExerciseSessionService {
     ExerciseSessionDTO getExerciseByIdAndUserId(String id, String userId);
     List<ExerciseSessionDTO> getExercisesByActivityTypeAndUserId(String activityType);
     List<ExerciseSessionDTO> getExercisesByMinDistance(Double distance);
+    List<ExerciseSessionDTO> getExercisesByDuration(Integer duration);
+    List<ExerciseSessionDTO> getExercisesByDifficulty(Integer difficultyLevel);
+    List<ExerciseSessionDTO> getExercisesByActivityTypeOrNotes(String search);
 
 }

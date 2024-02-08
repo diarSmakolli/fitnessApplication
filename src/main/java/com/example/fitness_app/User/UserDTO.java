@@ -1,6 +1,7 @@
 package com.example.fitness_app.User;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 @Getter
 @Setter
@@ -15,5 +16,8 @@ public class UserDTO {
     private String password;
 
     private String username;
+
+    @Nullable
+    private String profilePicture;
 
 }

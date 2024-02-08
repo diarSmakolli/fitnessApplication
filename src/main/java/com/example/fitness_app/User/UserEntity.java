@@ -1,5 +1,6 @@
 package com.example.fitness_app.User;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,6 +35,10 @@ public class UserEntity {
 
     @Column(name = "lastname")
     private String lastname;
+
+    @Column(name = "profile_picture")
+    @Nullable
+    private String profilePicture;
 
 
 }

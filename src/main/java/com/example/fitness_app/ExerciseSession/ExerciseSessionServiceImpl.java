@@ -47,7 +47,7 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
     @Transactional
     public List<ExerciseSessionDTO> getExercisesByActivityTypeAndUserId(String activityType) {
         try {
-            List<ExerciseSessionEntity> exercisesByActivityType = exerciseSessionRepository.findByActivityTypeAndDeletedAtIsNull(activityType);
+            List<ExerciseSessionEntity> exercisesByActivityType = exerciseSessionRepository.findByActivityTypeContainingIgnoreCaseAndDeletedAtIsNull(activityType);
 
             if(exercisesByActivityType.isEmpty()) {
                 throw new NotFoundException("No exercises found with activity type: " + activityType);
@@ -84,7 +84,76 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
             logAndThrowBadRequest("Invalid request: " + ex.getMessage());
             return Collections.emptyList();
         }
+    }
 
+    @Override
+    @Transactional
+    public List<ExerciseSessionDTO> getExercisesByDuration(Integer duration) {
+        try {
+            List<ExerciseSessionEntity> exercisesByDuration = exerciseSessionRepository.findByDuration(duration);
+
+            if(exercisesByDuration.isEmpty()) {
+                throw new NotFoundException("No exercises found with duration: " + duration);
+            }
+
+            return exercisesByDuration.stream()
+                    .map(exerciseSessionMapper::mapToDTO)
+                    .collect(Collectors.toList());
+
+        } catch(DataAccessException ex) {
+            logAndThrowInternalServerError("Error retrieving exercises by duration", ex);
+            return Collections.emptyList();
+        } catch(BadRequestException ex) {
+            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    @Transactional
+    public List<ExerciseSessionDTO> getExercisesByDifficulty(Integer difficultyLevel) {
+        try {
+            List<ExerciseSessionEntity> exercisesByDuration = exerciseSessionRepository.findByDifficultyLevel(difficultyLevel);
+
+            if(exercisesByDuration.isEmpty()) {
+                throw new NotFoundException("No exercises found with difficulty: " + difficultyLevel);
+            }
+
+            return exercisesByDuration.stream()
+                    .map(exerciseSessionMapper::mapToDTO)
+                    .collect(Collectors.toList());
+
+        } catch(DataAccessException ex) {
+            logAndThrowInternalServerError("Error retrieving exercises by difficulty", ex);
+            return Collections.emptyList();
+        } catch(BadRequestException ex) {
+            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    @Transactional
+    public List<ExerciseSessionDTO> getExercisesByActivityTypeOrNotes(String search) {
+        try {
+            List<ExerciseSessionEntity> exercisesByDuration =
+                    exerciseSessionRepository.findByActivityTypeContainingIgnoreCaseOrNotesContainingIgnoreCaseAndDeletedAtIsNull(search, search);
+
+            if(exercisesByDuration.isEmpty()) {
+                throw new NotFoundException("No exercises found with difficulty: " + search);
+            }
+
+            return exercisesByDuration.stream()
+                    .map(exerciseSessionMapper::mapToDTO)
+                    .collect(Collectors.toList());
+
+        } catch(DataAccessException ex) {
+            logAndThrowInternalServerError("Error retrieving exercises by difficulty", ex);
+            return Collections.emptyList();
+        } catch(BadRequestException ex) {
+            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+            return Collections.emptyList();
+        }
     }
 
 

@@ -9,6 +9,7 @@ public class ExerciseSessionMapper {
         return ExerciseSessionDTO.builder()
                 .id(exerciseSessionEntity.getId())
                 .activityType(exerciseSessionEntity.getActivityType())
+                .difficultyLevel(exerciseSessionEntity.getDifficultyLevel())
                 .duration(exerciseSessionEntity.getDuration())
                 .distance(exerciseSessionEntity.getDistance())
                 .weight(exerciseSessionEntity.getWeight())
@@ -25,6 +26,7 @@ public class ExerciseSessionMapper {
     public ExerciseSessionEntity mapToEntity(ExerciseSessionDTOSave exerciseSessionDTO) {
         return ExerciseSessionEntity.builder()
                 .activityType(exerciseSessionDTO.getActivityType())
+                .difficultyLevel(exerciseSessionDTO.getDifficultyLevel())
                 .duration(exerciseSessionDTO.getDuration())
                 .distance(exerciseSessionDTO.getDistance())
                 .weight(exerciseSessionDTO.getWeight())

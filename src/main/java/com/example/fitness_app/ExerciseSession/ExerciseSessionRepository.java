@@ -25,8 +25,13 @@ public interface ExerciseSessionRepository extends JpaRepository<ExerciseSession
 
 //    List<ExerciseSessionEntity> findByActivityTypeAndUserIdAndDeletedAtIsEmpty(String activityType, String userId);
 
-    List<ExerciseSessionEntity> findByActivityTypeAndDeletedAtIsNull(String activityType);
+    List<ExerciseSessionEntity> findByActivityTypeContainingIgnoreCaseAndDeletedAtIsNull(String activityType);
     List<ExerciseSessionEntity> findByDistanceGreaterThanEqual(Double distance);
+    List<ExerciseSessionEntity> findByDuration(Integer duration);
+
+    List<ExerciseSessionEntity> findByDifficultyLevel(Integer difficultyLevel);
+
+    List<ExerciseSessionEntity> findByActivityTypeContainingIgnoreCaseOrNotesContainingIgnoreCaseAndDeletedAtIsNull(String activityType, String notes);
 
 
 }

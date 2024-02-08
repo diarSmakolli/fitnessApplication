@@ -51,6 +51,34 @@ public class ExerciseSessionController {
             return ResponseEntity.ok(exercises);
     }
 
+    @GetMapping("/getByDuration")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved exercise by ID and user ID")
+    @ApiResponse(responseCode = "404", description = "Exercise not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    public ResponseEntity<List<ExerciseSessionDTO>> getExercisesByDuration(@RequestParam Integer duration) {
+        List<ExerciseSessionDTO> exercises = exerciseSessionService.getExercisesByDuration(duration);
+        return ResponseEntity.ok(exercises);
+    }
+
+    @GetMapping("/getByDifficultyLevel")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved exercise by ID and user ID")
+    @ApiResponse(responseCode = "404", description = "Exercise not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    public ResponseEntity<List<ExerciseSessionDTO>> getExercisesByDifficultyLevel(@RequestParam Integer difficultyLevel) {
+        List<ExerciseSessionDTO> exercises = exerciseSessionService.getExercisesByDifficulty(difficultyLevel);
+        return ResponseEntity.ok(exercises);
+    }
+
+    @GetMapping("/search")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved exercise by ID and user ID")
+    @ApiResponse(responseCode = "404", description = "Exercise not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    public ResponseEntity<List<ExerciseSessionDTO>> getExercisesByDifficultyLevel
+            (@RequestParam String search) {
+        List<ExerciseSessionDTO> exercises = exerciseSessionService.getExercisesByActivityTypeOrNotes(search);
+        return ResponseEntity.ok(exercises);
+    }
+
 
     @GetMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved test by ID")

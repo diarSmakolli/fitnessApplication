@@ -17,6 +17,8 @@ public class ExerciseSessionDTOSave {
 
     private String activityType;
 
+    private Integer difficultyLevel;
+
     private Integer duration;
 
     private Double distance;

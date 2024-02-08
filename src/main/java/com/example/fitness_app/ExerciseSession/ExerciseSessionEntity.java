@@ -26,6 +26,9 @@ public class ExerciseSessionEntity {
     @Column(name = "activity_type")
     private String activityType;
 
+    @Column(name = "difficulty_level")
+    private Integer difficultyLevel;
+
     @Column(name = "duration")
     private Integer duration;
 

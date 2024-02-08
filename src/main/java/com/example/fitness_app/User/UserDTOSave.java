@@ -1,5 +1,6 @@
 package com.example.fitness_app.User;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -20,4 +21,7 @@ public class UserDTOSave {
     private String username;
 
     private String password;
+
+    @Nullable
+    private String profilePicture;
 }

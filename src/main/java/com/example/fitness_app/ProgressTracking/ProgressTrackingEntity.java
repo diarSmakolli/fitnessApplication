@@ -24,10 +24,6 @@ public class ProgressTrackingEntity {
     @Column(name = "id")
     private final String id = UUID.randomUUID().toString();
 
-//    @ManyToOne
-//    @JoinColumn(name = "exercise_session_id", nullable = false)
-//    private ExerciseSessionEntity exerciseSession;
-
     @Column(name = "weight")
     private Double weight;
 

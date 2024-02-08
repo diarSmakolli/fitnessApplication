@@ -2,6 +2,7 @@ package com.example.fitness_app.ProgressTracking;
 
 import com.example.fitness_app.common.CommonResponseDTO;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ProgressTrackingService {
@@ -16,4 +17,6 @@ public interface ProgressTrackingService {
     List<ProgressTrackingDTO> getProgressesByExerciseId(String exerciseId);
 //    ProgressTrackingDTO saveProgressByExerciseIdAndUserId(ProgressTrackingDTOSave progressTrackingDTO, String exerciseSessionId, String userId);
     ProgressTrackingDTO saveProgressByExerciseIdAndUserId(ProgressTrackingDTOSave progressTrackingDTO, String exerciseSessionId, String userId);
+    List<ProgressTrackingDTO> getProgressesByDate(Date createdAt);
+    List<ProgressTrackingDTO> getProgressesByBmiRange(Integer minBmi, Integer maxBmi);
 }

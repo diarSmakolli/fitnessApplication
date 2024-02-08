@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -130,6 +131,82 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
 //            return null;
 //        }
 //    }
+
+//    @Override
+//    @Transactional
+//    public List<ExerciseSessionDTO> getExercisesByDifficulty(Integer difficultyLevel) {
+//        try {
+//            List<ExerciseSessionEntity> exercisesByDuration = exerciseSessionRepository.findByDifficultyLevel(difficultyLevel);
+//
+//            if(exercisesByDuration.isEmpty()) {
+//                throw new NotFoundException("No exercises found with difficulty: " + difficultyLevel);
+//            }
+//
+//            return exercisesByDuration.stream()
+//                    .map(exerciseSessionMapper::mapToDTO)
+//                    .collect(Collectors.toList());
+//
+//        } catch(DataAccessException ex) {
+//            logAndThrowInternalServerError("Error retrieving exercises by difficulty", ex);
+//            return Collections.emptyList();
+//        } catch(BadRequestException ex) {
+//            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+//            return Collections.emptyList();
+//        }
+//    }
+
+    @Override
+    @Transactional
+    public List<ProgressTrackingDTO> getProgressesByDate(Date createdAt) {
+        try {
+            List<ProgressTrackingEntity> progressesByDate =
+                    progressTrackingRepository.findByCreatedAtAndDeletedAtIsNull(createdAt);
+
+            if(progressesByDate.isEmpty()) {
+                throw new NotFoundException("No progresses found with date: " + progressesByDate);
+            }
+
+            return progressesByDate.stream()
+                    .map(progressTrackingMapper::mapToDTO)
+                    .collect(Collectors.toList());
+
+        } catch(DataAccessException ex) {
+            logAndThrowInternalServerError("Error retrieving progresses by date", ex);
+            return Collections.emptyList();
+        } catch(BadRequestException ex) {
+            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    @Transactional
+    public List<ProgressTrackingDTO> getProgressesByBmiRange(Integer minBmi, Integer maxBmi) {
+        try {
+
+            List<ProgressTrackingEntity> progressesByBodyMass =
+                    progressTrackingRepository.findByBodyMassIndexRange(minBmi, maxBmi);
+
+            if(progressesByBodyMass.isEmpty()) {
+                throw new NotFoundException("No progresses found with body mass: " + progressesByBodyMass);
+            }
+
+            return progressesByBodyMass.stream()
+                    .map(progressTrackingMapper::mapToDTO)
+                    .collect(Collectors.toList());
+
+        } catch(DataAccessException ex) {
+            logAndThrowInternalServerError("Error retrieving progresses by bodymass", ex);
+            return Collections.emptyList();
+        } catch(BadRequestException ex) {
+            logAndThrowBadRequest("Invalid request: " + ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+
+
+
 
 
 

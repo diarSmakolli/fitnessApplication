@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.Path;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -88,8 +89,38 @@ public class ProgressTrackingController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(savedProgressByExerciseIdAndUserId);
-
     }
+
+//    @GetMapping("/getByDifficultyLevel")
+//    @ApiResponse(responseCode = "200", description = "Successfully retrieved exercise by ID and user ID")
+//    @ApiResponse(responseCode = "404", description = "Exercise not found")
+//    @ApiResponse(responseCode = "500", description = "Internal server error")
+//    public ResponseEntity<List<ExerciseSessionDTO>> getExercisesByDifficultyLevel(@RequestParam Integer difficultyLevel) {
+//        List<ExerciseSessionDTO> exercises = exerciseSessionService.getExercisesByDifficulty(difficultyLevel);
+//        return ResponseEntity.ok(exercises);
+//    }
+
+
+
+    @GetMapping("/getByDate")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved exercise by ID and user ID")
+    @ApiResponse(responseCode = "404", description = "Exercise not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    public ResponseEntity<List<ProgressTrackingDTO>> getProgressesByDate(@RequestParam Date createdAt) {
+        List<ProgressTrackingDTO> progresses = progressTrackingService.getProgressesByDate(createdAt);
+        return ResponseEntity.ok(progresses);
+    }
+
+    @GetMapping("/filterByBmiRange")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved exercise by ID and user ID")
+    @ApiResponse(responseCode = "404", description = "Exercise not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    public ResponseEntity<List<ProgressTrackingDTO>> getProgressesByBodyMass(@RequestParam(required = false) Integer minBmi,
+                                                                             @RequestParam(required = false) Integer maxBmi) {
+        List<ProgressTrackingDTO> progresses = progressTrackingService.getProgressesByBmiRange(minBmi, maxBmi);
+        return ResponseEntity.ok(progresses);
+    }
+
 
     @GetMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved progress by ID")

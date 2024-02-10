@@ -3,6 +3,7 @@ import com.example.fitness_app.config.KeycloakConfig;
 import com.example.fitness_app.common.CommonResponseDTO;
 import com.example.fitness_app.common.ValidationUtilsDTO;
 import com.example.fitness_app.exceptions.*;
+import org.apache.catalina.User;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -22,6 +23,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
@@ -106,6 +109,44 @@ public class UserServiceImpl implements UserService {
 
 
 
+    @Override
+    public UserEntity findUserById(String id) {
+        UserEntity user = userRepository.findById(id)
+        .orElseThrow(() -> {
+            logger.warning("Progress not found: " + id);
+            return new EntityNotFoundException("Progress not found");
+        });
+
+        return user;
+    }
+
+    @Override
+    @Transactional
+    public UserEntity updateProfile(String id, UserDTO userDTO) {
+
+            UserEntity existingUser = findUserById(id);
+
+            if(!userDTO.getPassword().equals(existingUser.getPassword())) {
+                throw new NotFoundException("User not found with id");
+            }
+
+            existingUser.setFirstname(userDTO.getFirstname());
+            existingUser.setLastname(userDTO.getLastname());
+            existingUser.setEmail(userDTO.getEmail());
+            existingUser.setUsername(userDTO.getUsername());
+            existingUser.setProfilePicture(userDTO.getProfilePicture());
+
+            if(userDTO.getNewPassword() != null || userDTO.getNewPassword() == "" && !userDTO.getNewPassword().isEmpty()) {
+                existingUser.setPassword(userDTO.getNewPassword());
+            }
+
+            return userRepository.save(existingUser);
+
+    }
+
+
+
+    
     public String loginUser(UserLoginDTO userLoginDTO) {
         try {
             Keycloak keycloak = KeycloakBuilder.builder()
@@ -147,7 +188,5 @@ public class UserServiceImpl implements UserService {
         logger.warning(message);
         throw new BadRequestException(message);
     }
-
-
 
 }

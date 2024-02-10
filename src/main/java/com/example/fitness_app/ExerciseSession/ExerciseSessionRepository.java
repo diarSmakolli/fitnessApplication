@@ -28,10 +28,6 @@ public interface ExerciseSessionRepository extends JpaRepository<ExerciseSession
     List<ExerciseSessionEntity> findByActivityTypeContainingIgnoreCaseAndDeletedAtIsNull(String activityType);
     List<ExerciseSessionEntity> findByDistanceGreaterThanEqual(Double distance);
     List<ExerciseSessionEntity> findByDuration(Integer duration);
-
     List<ExerciseSessionEntity> findByDifficultyLevel(Integer difficultyLevel);
-
     List<ExerciseSessionEntity> findByActivityTypeContainingIgnoreCaseOrNotesContainingIgnoreCaseAndDeletedAtIsNull(String activityType, String notes);
-
-
 }

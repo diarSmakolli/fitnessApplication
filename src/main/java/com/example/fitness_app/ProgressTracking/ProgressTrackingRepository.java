@@ -28,6 +28,7 @@ public interface ProgressTrackingRepository extends JpaRepository<ProgressTracki
     List<ProgressTrackingEntity> findProgressesByExerciseIdAndDeletedAtIsNull(@Param("exerciseId") String exerciseId);
 
     List<ProgressTrackingEntity> findByCreatedAtAndDeletedAtIsNull(Date createdAt);
+    
     @Query("SELECT p FROM ProgressTrackingEntity p WHERE (:minBmi IS NULL OR p.bodyMassIndex >= :minBmi) AND (:maxBmi IS NULL OR p.bodyMassIndex <= :maxBmi)")
     List<ProgressTrackingEntity> findByBodyMassIndexRange(@Param("minBmi") Integer minBmi, @Param("maxBmi") Integer maxBmi);
 

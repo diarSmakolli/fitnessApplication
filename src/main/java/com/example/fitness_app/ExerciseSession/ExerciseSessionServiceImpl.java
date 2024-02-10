@@ -383,8 +383,4 @@ public class ExerciseSessionServiceImpl implements ExerciseSessionService {
     }
 
 
-
-
-
-
 }

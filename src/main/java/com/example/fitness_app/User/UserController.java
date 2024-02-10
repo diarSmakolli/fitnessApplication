@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
+
 @RestController
 @RequestMapping("/api/users")
 @Validated
@@ -44,6 +45,25 @@ public class UserController {
         String tokenResponse = userService.loginUser(userLoginDTO);
         return ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
     }
+
+    @GetMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved progress by ID")
+    @ApiResponse(responseCode = "404", description = "Progress not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    public ResponseEntity<UserEntity> findUserById(@PathVariable String id) {
+
+        UserEntity user = userService.findUserById(id);
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/{id}/update-profile")
+    public ResponseEntity<UserEntity> updateProfile(@PathVariable String id, @RequestBody UserDTO userDTO) {
+        UserEntity user = userService.updateProfile(id, userDTO);
+        return ResponseEntity.ok(user);
+    }
+
+    
+    
 
 
 

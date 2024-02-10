@@ -7,6 +7,7 @@ import org.apache.catalina.User;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.AccessTokenResponse;
@@ -22,6 +23,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
@@ -95,6 +98,12 @@ public class UserServiceImpl implements UserService {
             userEntity.setLastname(userDTOSave.getLastname());
             userEntity.setProfilePicture(userDTOSave.getProfilePicture());
 
+
+
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String hashedPassword = passwordEncoder.encode(userDTOSave.getPassword());
+            userEntity.setPassword(hashedPassword);
+
             userRepository.save(userEntity);
 
         }
@@ -124,29 +133,28 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserEntity updateProfile(String id, UserDTO userDTO) {
 
-            UserEntity existingUser = findUserById(id);
+            UserEntity existingUser = userRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
 
-            if(!userDTO.getPassword().equals(existingUser.getPassword())) {
-                throw new NotFoundException("User not found with id");
-            }
+//            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+//            if(!userDTO.getPassword().equals(existingUser.getPassword())) {
+//                throw new NotFoundException("Last password you entered is incorrect!");
+//            }
+
+
 
             existingUser.setFirstname(userDTO.getFirstname());
             existingUser.setLastname(userDTO.getLastname());
-            existingUser.setEmail(userDTO.getEmail());
-            existingUser.setUsername(userDTO.getUsername());
+//            existingUser.setEmail(userDTO.getEmail());
+//            existingUser.setUsername(userDTO.getUsername());
             existingUser.setProfilePicture(userDTO.getProfilePicture());
 
-            if(userDTO.getNewPassword() != null || userDTO.getNewPassword() == "" && !userDTO.getNewPassword().isEmpty()) {
-                existingUser.setPassword(userDTO.getNewPassword());
-            }
 
             return userRepository.save(existingUser);
-
     }
 
 
-
-    
     public String loginUser(UserLoginDTO userLoginDTO) {
         try {
             Keycloak keycloak = KeycloakBuilder.builder()
